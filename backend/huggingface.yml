@@ -1,0 +1,41 @@
+runtime:
+  cpu: 2
+  memory: 8Gi
+  accelerator: none
+
+resources:
+  cpu: 2
+  memory: 8Gi
+  accelerator: none
+
+secrets:
+  - name: DATABASE_URL
+    description: PostgreSQL database URL for the application
+    required: true
+  - name: SECRET_KEY
+    description: Secret key for JWT token encryption
+    required: true
+
+env:
+  - DATABASE_URL
+  - SECRET_KEY
+  - ALGORITHM=HS256
+  - ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+healthcheck:
+  path: /health
+  interval: 30
+  timeout: 10
+  retries: 3
+  success_threshold: 1
+  failure_threshold: 3
+
+ports:
+  - port: 8000
+    protocol: HTTP
+
+image: python:3.10-slim
+
+run_commands:
+  - pip install -r requirements.txt
+  - uvicorn app.main:app --host 0.0.0.0 --port 8000
