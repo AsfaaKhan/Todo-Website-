@@ -25,10 +25,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     // Check if user is logged in on initial load
     const token = localStorage.getItem('access_token');
-    if (token && authAPI.getCurrentUser()) {
-      // In a real app, you might want to fetch user details here
+    if (token) {
+      // Token exists, user is likely authenticated
       setIsAuthenticated(true);
-      // Set a dummy user object - in real app, fetch from API
+      // Set user info from localStorage
       setUser({ username: localStorage.getItem('username') });
     }
     setIsLoading(false);
@@ -60,17 +60,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    authAPI.logout();
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('username');
     setUser(null);
     setIsAuthenticated(false);
   };
 
   const getTodos = async (): Promise<Todo[]> => {
     try {
-      const response = await authAPI.getCurrentUser() ?
-        (await import('../services/api')).todosAPI.getAll() :
-        Promise.reject(new Error('Not authenticated'));
-      return (await response).data;
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      const { todosAPI } = await import('../services/api');
+      const response = await todosAPI.getAll();
+      return response.data;
     } catch (error) {
       throw error;
     }

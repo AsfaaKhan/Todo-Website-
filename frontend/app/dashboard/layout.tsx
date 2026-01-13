@@ -1,21 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
-  // Redirect to login if not authenticated
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (redirect effect will handle navigation)
   if (!isAuthenticated) {
-    router.push('/login');
     return null;
   }
 
   const handleLogout = () => {
+    const { logout } = useAuth(); // Get logout from useAuth to ensure it's available
     logout();
     router.push('/login');
   };

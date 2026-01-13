@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -14,9 +14,16 @@ const SignupPage: React.FC = () => {
   const { register, isAuthenticated } = useAuth();
   const router = useRouter();
 
-  // Redirect if already authenticated
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
+
+  // Prevent rendering if redirecting
   if (isAuthenticated) {
-    router.push('/dashboard');
+    return null; // Return null while redirecting
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
