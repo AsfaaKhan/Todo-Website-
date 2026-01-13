@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +31,6 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
   }
 
   const handleLogout = () => {
-    const { logout } = useAuth(); // Get logout from useAuth to ensure it's available
     logout();
     router.push('/login');
   };

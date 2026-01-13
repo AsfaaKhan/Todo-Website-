@@ -3,20 +3,23 @@ import axios from 'axios';
 // Function to get the proper API base URL based on current protocol
 const getApiBaseUrl = (): string => {
   // Get the environment variable
-  let envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+  // For Hugging Face spaces, ensure HTTPS
+  if (envUrl.includes('hf.space')) {
+    if (envUrl.startsWith('http://')) {
+      return envUrl.replace('http://', 'https://');
+    }
+    return envUrl;
+  }
 
   // Check if we're in a browser environment
   if (typeof window !== 'undefined') {
-    // Special handling for Hugging Face spaces - they should always use HTTPS
-    if (envUrl.includes('hf.space') && envUrl.startsWith('http://')) {
-      envUrl = envUrl.replace('http://', 'https://');
-    }
-
     // If the current page is served over HTTPS, ensure the API URL is also HTTPS
     if (window.location.protocol === 'https:') {
       // If the environment variable URL starts with HTTP, convert to HTTPS
       if (envUrl.startsWith('http://')) {
-        envUrl = envUrl.replace('http://', 'https://');
+        return envUrl.replace('http://', 'https://');
       }
     }
   }
@@ -24,32 +27,65 @@ const getApiBaseUrl = (): string => {
   return envUrl;
 };
 
-// Create a single axios instance
+// Create a single axios instance with base configuration
 const api = axios.create({
   baseURL: getApiBaseUrl(),
+  timeout: 10000, // Add timeout to prevent hanging requests
 });
 
-// Request interceptor to add auth token
+// Add interceptors to the main instance
 api.interceptors.request.use(
   (config) => {
-    // Update the baseURL based on current environment to ensure HTTPS in production
-    config.baseURL = getApiBaseUrl();
-
+    // Only add auth token to headers, don't update baseURL here
+    // The baseURL should remain as configured at instance creation
     const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Log the request for debugging (only in development)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('API Request:', {
+        url: config.baseURL + config.url,
+        method: config.method,
+        headers: config.headers
+      });
+    }
+
     return config;
   },
   (error) => {
+    // Log request errors for debugging
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('API Request Error:', error.message || error);
+    }
     return Promise.reject(error);
   }
 );
 
-// Response interceptor to handle token expiration
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Log successful responses for debugging
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('API Response:', {
+        status: response.status,
+        url: response.config.url,
+        data: response.data
+      });
+    }
+    return response;
+  },
   (error) => {
+    // Log response errors for debugging
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('API Response Error:', {
+        message: error.message,
+        response: error.response,
+        request: error.request,
+        config: error.config
+      });
+    }
+
     if (error.response?.status === 401) {
       // Clear token and redirect to login
       localStorage.removeItem('access_token');
@@ -61,7 +97,10 @@ api.interceptors.response.use(
   }
 );
 
-// Create API functions that use the single instance
+// Export the configured instance
+export default api;
+
+// Export API functions that use the configured instance
 export const authAPI = {
   register: (userData: { username: string; email: string; password: string }) =>
     api.post('/auth/register', userData),
@@ -115,6 +154,3 @@ export const todosAPI = {
 
   delete: (id: number) => api.delete(`/todos/${id}`),
 };
-
-// Export the axios instance
-export default api;

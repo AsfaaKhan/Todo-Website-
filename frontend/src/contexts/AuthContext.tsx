@@ -1,6 +1,6 @@
 "use client"
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authAPI, type Todo } from '../services/api';
+import { authAPI, todosAPI, type Todo } from '../services/api';
 
 interface AuthContextType {
   user: any | null;
@@ -73,39 +73,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Not authenticated');
       }
 
-      const { todosAPI } = await import('../services/api');
       const response = await todosAPI.getAll();
       return response.data;
     } catch (error) {
+      console.error('Error fetching todos:', error);
       throw error;
     }
   };
 
   const createTodo = async (todoData: { title: string; description?: string }): Promise<Todo> => {
     try {
-      const { todosAPI } = await import('../services/api');
       const response = await todosAPI.create(todoData);
       return response.data;
     } catch (error) {
+      console.error('Error creating todo:', error);
       throw error;
     }
   };
 
   const updateTodo = async (id: number, todoData: { title?: string; description?: string; completed?: boolean }): Promise<Todo> => {
     try {
-      const { todosAPI } = await import('../services/api');
       const response = await todosAPI.update(id, todoData);
       return response.data;
     } catch (error) {
+      console.error('Error updating todo:', error);
       throw error;
     }
   };
 
   const deleteTodo = async (id: number): Promise<void> => {
     try {
-      const { todosAPI } = await import('../services/api');
       await todosAPI.delete(id);
     } catch (error) {
+      console.error('Error deleting todo:', error);
       throw error;
     }
   };

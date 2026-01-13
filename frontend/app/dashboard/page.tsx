@@ -12,22 +12,22 @@ const DashboardPage: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchTodosWithAuthCheck = async () => {
-      // Wait for auth to be loaded
-      if (authIsLoading) return;
+    if (!authIsLoading) {
+      const fetchTodosWithAuthCheck = async () => {
+        try {
+          setLoading(true);
+          const todosData = await getTodos();
+          setTodos(todosData);
+        } catch (err) {
+          console.error('Error loading todos:', err);
+          setError('Failed to load todos');
+        } finally {
+          setLoading(false);
+        }
+      };
 
-      try {
-        setLoading(true);
-        const todosData = await getTodos();
-        setTodos(todosData);
-      } catch (err) {
-        setError('Failed to load todos');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTodosWithAuthCheck();
+      fetchTodosWithAuthCheck();
+    }
   }, [authIsLoading]);
 
   const handleCreateTodo = async (e: React.FormEvent) => {
@@ -121,7 +121,7 @@ const DashboardPage: React.FC = () => {
             <textarea
               id="description"
               rows={2}
-              value={newTodo.description}
+              value={newTodo.description || ''}
               onChange={(e) => setNewTodo({...newTodo, description: e.target.value})}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Additional details..."
