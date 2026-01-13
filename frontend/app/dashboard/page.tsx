@@ -3,6 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { Todo as TodoType } from '../../src/services/api';
+import { Input } from '../../src/components/Input';
+import { Button } from '../../src/components/Button';
+import { Skeleton, SkeletonCard } from '../../src/components/Skeleton';
+import { TodoCard } from '../../src/components/TodoCard';
 
 const DashboardPage: React.FC = () => {
   const { getTodos, createTodo, updateTodo, deleteTodo, isLoading: authIsLoading } = useAuth();
@@ -74,56 +78,69 @@ const DashboardPage: React.FC = () => {
 
   if (loading || authIsLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="px-4 py-6 sm:px-0">
+        <div className="rounded-lg p-6">
+          <h1 className="text-h1 font-semibold text-foreground mb-6">Your Todos</h1>
+
+          <div className="mb-8">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+              <div className="sm:col-span-2">
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="sm:col-span-1">
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+            <div className="mt-2">
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <SkeletonCard paragraphCount={2} showActions={true} />
+            <SkeletonCard paragraphCount={2} showActions={true} />
+            <SkeletonCard paragraphCount={2} showActions={true} />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="px-4 py-6 sm:px-0">
-      <div className="border-4 border-dashed border-gray-200 rounded-lg p-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Your Todos</h1>
+      <div className="rounded-lg p-6">
+        <h1 className="text-h1 font-semibold text-foreground mb-6">Your Todos</h1>
 
         {/* Add Todo Form */}
         <form onSubmit={handleCreateTodo} className="mb-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="sm:col-span-2">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                Todo Title
-              </label>
-              <input
-                type="text"
+              <Input
                 id="title"
+                label="Todo Title"
                 value={newTodo.title}
                 onChange={(e) => setNewTodo({...newTodo, title: e.target.value})}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="What needs to be done?"
                 required
               />
             </div>
             <div className="sm:col-span-1">
-              <label htmlFor="add-todo" className="block text-sm font-medium text-gray-700 sr-only">
-                Add Todo
-              </label>
-              <button
+              <Button
                 type="submit"
-                className="mt-6 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="mt-6 w-full"
               >
                 Add Todo
-              </button>
+              </Button>
             </div>
           </div>
           <div className="mt-2">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Description (optional)
-            </label>
-            <textarea
+            <Input
               id="description"
+              label="Description (optional)"
+              as="textarea"
               rows={2}
               value={newTodo.description || ''}
               onChange={(e) => setNewTodo({...newTodo, description: e.target.value})}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Additional details..."
             />
           </div>
@@ -131,8 +148,8 @@ const DashboardPage: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-md bg-red-50 p-4 mb-4">
-            <div className="text-sm text-red-700">{error}</div>
+          <div className="rounded-md bg-destructive/10 p-4 mb-4">
+            <div className="text-sm text-destructive">{error}</div>
           </div>
         )}
 
@@ -140,54 +157,17 @@ const DashboardPage: React.FC = () => {
         <div className="space-y-4">
           {todos.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">No todos yet. Add one above!</p>
+              <p className="text-muted-foreground">No todos yet. Add one above!</p>
             </div>
           ) : (
             todos.map((todo) => (
-              <div
+              <TodoCard
                 key={todo.id}
-                className={`border rounded-lg p-4 ${todo.completed ? 'bg-green-50' : 'bg-white'}`}
-              >
-                <div className="flex items-start">
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => handleToggleComplete(todo.id, todo.completed)}
-                    className="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500"
-                  />
-                  <div className="ml-3 flex-1 min-w-0">
-                    <p className={`text-lg font-medium ${todo.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                      {todo.title}
-                    </p>
-                    {todo.description && (
-                      <p className={`text-sm ${todo.completed ? 'line-through text-gray-500' : 'text-gray-500'}`}>
-                        {todo.description}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-400 mt-1">
-                      Created: {new Date(todo.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleUpdateTodo(todo.id, { completed: !todo.completed })}
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        todo.completed
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}
-                    >
-                      {todo.completed ? 'Undo' : 'Complete'}
-                    </button>
-                    <button
-                      onClick={() => handleDeleteTodo(todo.id)}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
+                todo={todo}
+                onToggleComplete={handleToggleComplete}
+                onUpdateTodo={handleUpdateTodo}
+                onDeleteTodo={handleDeleteTodo}
+              />
             ))
           )}
         </div>

@@ -3,12 +3,16 @@ import axios from 'axios';
 // Function to get the proper API base URL based on current protocol
 const getApiBaseUrl = (): string => {
   // Get the environment variable
-  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  let envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   // For Hugging Face spaces, ensure HTTPS
   if (envUrl.includes('hf.space')) {
     if (envUrl.startsWith('http://')) {
-      return envUrl.replace('http://', 'https://');
+      envUrl = envUrl.replace('http://', 'https://');
+    }
+    // Ensure there's no trailing slash
+    if (envUrl.endsWith('/')) {
+      envUrl = envUrl.slice(0, -1);
     }
     return envUrl;
   }
@@ -19,9 +23,14 @@ const getApiBaseUrl = (): string => {
     if (window.location.protocol === 'https:') {
       // If the environment variable URL starts with HTTP, convert to HTTPS
       if (envUrl.startsWith('http://')) {
-        return envUrl.replace('http://', 'https://');
+        envUrl = envUrl.replace('http://', 'https://');
       }
     }
+  }
+
+  // Ensure there's no trailing slash for consistency
+  if (envUrl.endsWith('/')) {
+    envUrl = envUrl.slice(0, -1);
   }
 
   return envUrl;
@@ -30,7 +39,8 @@ const getApiBaseUrl = (): string => {
 // Create a single axios instance with base configuration
 const api = axios.create({
   baseURL: getApiBaseUrl(),
-  timeout: 10000, // Add timeout to prevent hanging requests
+  timeout: 15000, // Increase timeout to 15 seconds to handle slower Hugging Face responses
+  withCredentials: true, // Ensure cookies/credentials are included in cross-origin requests
 });
 
 // Add interceptors to the main instance

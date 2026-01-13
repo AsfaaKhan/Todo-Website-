@@ -1,0 +1,172 @@
+/* Spacing Scale and Grid System */
+:root {
+  /* Base Unit: 4px (0.25rem) */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;    /* 4px */
+  --spacing-2: 0.5rem;     /* 8px */
+  --spacing-3: 0.75rem;    /* 12px */
+  --spacing-4: 1rem;       /* 16px */
+  --spacing-5: 1.25rem;    /* 20px */
+  --spacing-6: 1.5rem;     /* 24px */
+  --spacing-7: 1.75rem;    /* 28px */
+  --spacing-8: 2rem;       /* 32px */
+  --spacing-10: 2.5rem;    /* 40px */
+  --spacing-12: 3rem;      /* 48px */
+  --spacing-16: 4rem;      /* 64px */
+
+  /* Transition Durations */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 300ms;
+
+  /* Transition Timing Functions */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Layout Components */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: var(--spacing-6);
+    padding-right: var(--spacing-6);
+  }
+}
+
+.section {
+  padding-top: var(--spacing-8);
+  padding-bottom: var(--spacing-8);
+}
+
+.section--tight {
+  padding-top: var(--spacing-4);
+  padding-bottom: var(--spacing-4);
+}
+
+.card {
+  background-color: var(--color-card-bg);
+  border-radius: 0.5rem; /* 8px */
+  padding: var(--spacing-4);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  transition: box-shadow var(--transition-normal) var(--ease-in-out);
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.grid--gap-tight {
+  gap: var(--spacing-2);
+}
+
+.grid--gap-loose {
+  gap: var(--spacing-8);
+}
+
+/* Responsive Grid Columns */
+.grid--cols-1 {
+  grid-template-columns: 1fr;
+}
+
+.grid--cols-2 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid--cols-3 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .grid--cols-1-md {
+    grid-template-columns: 1fr;
+  }
+
+  .grid--cols-2-md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid--cols-3-md {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid--cols-1-lg {
+    grid-template-columns: 1fr;
+  }
+
+  .grid--cols-2-lg {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid--cols-3-lg {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid--cols-4-lg {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Animation Utilities */
+.animate-elevate {
+  transition: transform var(--transition-normal) var(--ease-in-out);
+}
+
+.animate-elevate:hover {
+  transform: translateY(-2px);
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) var(--ease-in-out);
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-normal) var(--ease-in-out);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Transition utilities */
+.transition-fast {
+  transition: all var(--transition-fast) var(--ease-in-out);
+}
+
+.transition-normal {
+  transition: all var(--transition-normal) var(--ease-in-out);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow) var(--ease-in-out);
+}

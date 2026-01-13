@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
+/* Import custom design system */
+@import "../src/styles/colors.css";
+@import "../src/styles/typography.css";
+@import "../src/styles/layout.css";
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-card-bg);
+  --border: var(--color-border);
+  --input: var(--color-border);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Primary colors */
+  --primary: var(--color-primary);
+  --primary-foreground: #ffffff;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Secondary colors */
+  --secondary: var(--color-primary-light);
+  --secondary-foreground: #ffffff;
+
+  /* Accent colors */
+  --accent: var(--color-primary-light);
+  --accent-foreground: var(--color-text-primary);
+
+  /* Success colors */
+  --success: var(--color-success);
+  --success-foreground: #ffffff;
+
+  /* Error colors */
+  --destructive: var(--color-error);
+  --destructive-foreground: #ffffff;
+
+  /* Warning colors */
+  --warning: var(--color-warning);
+  --warning-foreground: #ffffff;
+
+  /* Muted colors */
+  --muted: var(--color-card-bg);
+  --muted-foreground: var(--color-text-secondary);
+
+  /* Typography */
+  --font-sans: var(--font-family);
+  --font-mono: var(--font-family);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+}
+
+/* Focus ring styling */
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: #000000;
+    --input: #000000;
+    --ring: #000000;
+    --color-text-primary: #000000;
+    --color-text-secondary: #000000;
+  }
+
+  .border {
+    border-width: 2px;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    border-width: 2px;
+  }
 }

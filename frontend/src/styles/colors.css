@@ -1,0 +1,23 @@
+/* Color Palette Variables */
+:root {
+  /* Blue/Indigo Primary Colors */
+  --color-primary: #4F46E5;        /* Primary indigo */
+  --color-primary-light: #818CF8;  /* Light indigo */
+  --color-primary-dark: #4338CA;   /* Dark indigo */
+
+  /* Neutral Grays */
+  --color-background: #F9FAFB;      /* Main background */
+  --color-card-bg: #F3F4F6;        /* Card background */
+  --color-border: #E5E7EB;         /* Border color */
+  --color-text-primary: #111827;   /* Primary text */
+  --color-text-secondary: #6B7280; /* Secondary text */
+  --color-text-muted: #9CA3AF;     /* Muted text */
+
+  /* Status Colors */
+  --color-success: #10B981;        /* Success/green */
+  --color-error: #EF4444;          /* Error/red */
+  --color-warning: #F59E0B;        /* Warning/yellow */
+
+  /* Focus and Interaction */
+  --color-focus-ring: #60A5FA;     /* Focus ring color */
+}
