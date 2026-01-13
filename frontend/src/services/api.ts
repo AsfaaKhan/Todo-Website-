@@ -1,51 +1,71 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
-// Use HTTPS for production environments (like Vercel), HTTP for development
-const API_BASE_URL =
-  typeof window !== 'undefined' && window.location.protocol === 'https:'
-    ? process.env.NEXT_PUBLIC_API_URL?.replace('http://', 'https://') || 'https://localhost:8000'
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Function to get the proper API base URL based on current protocol
+const getApiBaseUrl = (): string => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+  // If we're running in the browser and the page is HTTPS but the env URL is HTTP,
+  // convert the URL to HTTPS to avoid mixed content issues
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && envUrl.startsWith('http://')) {
+    return envUrl.replace('http://', 'https://');
   }
-);
 
-// Response interceptor to handle token expiration
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Clear token and redirect to login
-      localStorage.removeItem('access_token');
-      window.location.href = '/login';
+  return envUrl;
+};
+
+// Function to create axios instance with proper baseURL
+const createApiInstance = (): AxiosInstance => {
+  const api = axios.create({
+    baseURL: getApiBaseUrl(),
+  });
+
+  // Request interceptor to add auth token
+  api.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
 
-export default api;
+  // Response interceptor to handle token expiration
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        // Clear token and redirect to login
+        localStorage.removeItem('access_token');
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return api;
+};
+
+// Export the function to create API instance
+export const getApi = (): AxiosInstance => {
+  return createApiInstance();
+};
+
+// Export default api instance
+export default createApiInstance();
 
 // Authentication API functions
 export const authAPI = {
   register: (userData: { username: string; email: string; password: string }) =>
-    api.post('/auth/register', userData),
+    getApi().post('/auth/register', userData),
 
   login: (credentials: { username: string; password: string }) =>
-    api.post('/auth/login', credentials),
+    getApi().post('/auth/login', credentials),
 
   logout: () => {
     localStorage.removeItem('access_token');
@@ -81,14 +101,14 @@ export interface UpdateTodoData {
 }
 
 export const todosAPI = {
-  getAll: () => api.get<Todo[]>('/todos'),
+  getAll: () => getApi().get<Todo[]>('/todos'),
 
-  getById: (id: number) => api.get<Todo>(`/todos/${id}`),
+  getById: (id: number) => getApi().get<Todo>(`/todos/${id}`),
 
-  create: (todoData: CreateTodoData) => api.post<Todo>('/todos', todoData),
+  create: (todoData: CreateTodoData) => getApi().post<Todo>('/todos', todoData),
 
   update: (id: number, todoData: UpdateTodoData) =>
-    api.put<Todo>(`/todos/${id}`, todoData),
+    getApi().put<Todo>(`/todos/${id}`, todoData),
 
-  delete: (id: number) => api.delete(`/todos/${id}`),
+  delete: (id: number) => getApi().delete(`/todos/${id}`),
 };
