@@ -27,15 +27,26 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(todos.router, prefix="/todos", tags=["Todos"])
 
-@app.on_event("startup")
-def on_startup():
-    """Create database tables on startup"""
+import threading
+import time
+
+def delayed_db_init():
+    """Initialize database in a separate thread to avoid blocking startup"""
     try:
+        time.sleep(2)  # Small delay to ensure other startup processes complete
         create_db_and_tables()
+        print("Database initialized successfully")
     except Exception as e:
         print(f"Warning: Could not initialize database: {e}")
         print("Make sure your database server is running.")
         print("The application will continue to run without database initialization.")
+
+@app.on_event("startup")
+def on_startup():
+    """Initialize database in background to prevent blocking startup"""
+    # Start database initialization in a separate thread
+    db_thread = threading.Thread(target=delayed_db_init, daemon=True)
+    db_thread.start()
 
 @app.get("/")
 def read_root():
