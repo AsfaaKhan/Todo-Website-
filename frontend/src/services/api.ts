@@ -46,7 +46,7 @@ api.interceptors.request.use(
     // Log the request for debugging (only in development)
     if (process.env.NODE_ENV !== 'production') {
       console.log('API Request:', {
-        url: config.baseURL + config.url,
+        url: (config.baseURL || '') + config.url,
         method: config.method,
         headers: config.headers
       });
@@ -69,7 +69,7 @@ api.interceptors.response.use(
     if (process.env.NODE_ENV !== 'production') {
       console.log('API Response:', {
         status: response.status,
-        url: response.config.url,
+        url: (response.config.baseURL || '') + response.config.url,
         data: response.data
       });
     }
@@ -82,7 +82,10 @@ api.interceptors.response.use(
         message: error.message,
         response: error.response,
         request: error.request,
-        config: error.config
+        config: {
+          ...error.config,
+          url: (error.config?.baseURL || '') + error.config?.url
+        }
       });
     }
 
