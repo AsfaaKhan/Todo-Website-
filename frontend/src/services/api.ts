@@ -2,12 +2,14 @@ import axios, { AxiosInstance } from 'axios';
 
 // Function to get the proper API base URL based on current protocol
 const getApiBaseUrl = (): string => {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  let envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-  // If we're running in the browser and the page is HTTPS but the env URL is HTTP,
-  // convert the URL to HTTPS to avoid mixed content issues
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && envUrl.startsWith('http://')) {
-    return envUrl.replace('http://', 'https://');
+  // Always ensure HTTPS for production environments to avoid mixed content issues
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    // For production, enforce HTTPS regardless of what's in the environment variable
+    if (envUrl.startsWith('http://')) {
+      envUrl = envUrl.replace('http://', 'https://');
+    }
   }
 
   return envUrl;
@@ -22,6 +24,9 @@ const createApiInstance = (): AxiosInstance => {
   // Request interceptor to add auth token
   api.interceptors.request.use(
     (config) => {
+      // Update the baseURL based on current environment to ensure HTTPS in production
+      config.baseURL = getApiBaseUrl();
+
       const token = localStorage.getItem('access_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -69,6 +74,7 @@ export const authAPI = {
 
   logout: () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('username');
   },
 
   getCurrentUser: () => {

@@ -5,33 +5,36 @@ import { useAuth } from '../../src/contexts/AuthContext';
 import { Todo as TodoType } from '../../src/services/api';
 
 const DashboardPage: React.FC = () => {
-  const { getTodos, createTodo, updateTodo, deleteTodo } = useAuth();
+  const { getTodos, createTodo, updateTodo, deleteTodo, isLoading: authIsLoading } = useAuth();
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [newTodo, setNewTodo] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    const fetchTodosWithAuthCheck = async () => {
+      // Wait for auth to be loaded
+      if (authIsLoading) return;
 
-  const fetchTodos = async () => {
-    try {
-      setLoading(true);
-      const todosData = await getTodos();
-      setTodos(todosData);
-    } catch (err) {
-      setError('Failed to load todos');
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        setLoading(true);
+        const todosData = await getTodos();
+        setTodos(todosData);
+      } catch (err) {
+        setError('Failed to load todos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTodosWithAuthCheck();
+  }, [authIsLoading]);
 
   const handleCreateTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const createdTodo = await createTodo(newTodo);
-      setTodos([createdTodo, ...todos]);
+      setTodos(prevTodos => [createdTodo, ...prevTodos]);
       setNewTodo({ title: '', description: '' });
     } catch (err) {
       setError('Failed to create todo');
@@ -41,7 +44,7 @@ const DashboardPage: React.FC = () => {
   const handleToggleComplete = async (id: number, currentCompleted: boolean) => {
     try {
       const updatedTodo = await updateTodo(id, { completed: !currentCompleted });
-      setTodos(todos.map(todo =>
+      setTodos(prevTodos => prevTodos.map(todo =>
         todo.id === id ? updatedTodo : todo
       ));
     } catch (err) {
@@ -52,7 +55,7 @@ const DashboardPage: React.FC = () => {
   const handleUpdateTodo = async (id: number, updates: Partial<TodoType>) => {
     try {
       const updatedTodo = await updateTodo(id, updates);
-      setTodos(todos.map(todo =>
+      setTodos(prevTodos => prevTodos.map(todo =>
         todo.id === id ? updatedTodo : todo
       ));
     } catch (err) {
@@ -63,13 +66,13 @@ const DashboardPage: React.FC = () => {
   const handleDeleteTodo = async (id: number) => {
     try {
       await deleteTodo(id);
-      setTodos(todos.filter(todo => todo.id !== id));
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
     } catch (err) {
       setError('Failed to delete todo');
     }
   };
 
-  if (loading) {
+  if (loading || authIsLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
