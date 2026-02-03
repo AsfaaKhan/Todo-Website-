@@ -23,17 +23,18 @@ export const Input: React.FC<InputProps> = ({
   const hasSuccess = Boolean(success);
 
   const baseClasses = [
-    'flex w-full rounded-md border',
-    'px-3 py-2 text-sm',
+    'flex w-full rounded-lg border',
+    'px-4 py-3 text-sm',
     'ring-offset-background',
     'placeholder:text-muted-foreground',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     'disabled:cursor-not-allowed disabled:opacity-50',
+    'transition-all duration-200',
     hasError
       ? 'border-destructive focus-visible:ring-destructive'
       : hasSuccess
       ? 'border-success focus-visible:ring-success'
-      : 'border-input focus-visible:ring-primary',
+      : 'border-input focus-visible:ring-primary hover:border-primary/50',
     className
   ].join(' ');
 

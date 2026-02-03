@@ -17,6 +17,11 @@ class User(UserBase, table=True):
     todos: List["Todo"] = Relationship(back_populates="user", cascade_delete=True)
 
 # Todo model
+class PriorityLevel(str, enum.Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
 class TodoState(str, enum.Enum):
     ACTIVE = "active"
     COMPLETED = "completed"
@@ -29,6 +34,12 @@ class Todo(SQLModel, table=True):
     user_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Additional fields for new features
+    priority: Optional[PriorityLevel] = Field(default=PriorityLevel.MEDIUM)
+    due_date: Optional[datetime] = Field(default=None)
+    category: Optional[str] = Field(default=None, max_length=50)  # For tags/categories
+    recurring_rule: Optional[str] = Field(default=None, max_length=100)  # For recurring tasks
 
     # Relationship to user
     user: User = Relationship(back_populates="todos")
@@ -49,11 +60,19 @@ class TodoCreate(SQLModel):
     title: str = Field(min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: bool = Field(default=False)
+    priority: Optional[PriorityLevel] = Field(default=PriorityLevel.MEDIUM)
+    due_date: Optional[datetime] = Field(default=None)
+    category: Optional[str] = Field(default=None, max_length=50)
+    recurring_rule: Optional[str] = Field(default=None, max_length=100)
 
 class TodoUpdate(SQLModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: Optional[bool] = None
+    priority: Optional[PriorityLevel] = None
+    due_date: Optional[datetime] = None
+    category: Optional[str] = None
+    recurring_rule: Optional[str] = None
 
 class TodoRead(TodoCreate):
     id: int

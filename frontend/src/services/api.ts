@@ -56,9 +56,9 @@ api.interceptors.request.use(
     // Log the request for debugging (only in development)
     if (process.env.NODE_ENV !== 'production') {
       console.log('API Request:', {
-        url: (config.baseURL || '') + config.url,
-        method: config.method,
-        headers: config.headers
+        url: (config.baseURL || '') + (config.url || ''),
+        method: config?.method || 'unknown',
+        headers: config?.headers || {}
       });
     }
 
@@ -67,7 +67,7 @@ api.interceptors.request.use(
   (error) => {
     // Log request errors for debugging
     if (process.env.NODE_ENV !== 'production') {
-      console.error('API Request Error:', error.message || error);
+      console.error('API Request Error:', error?.message || error || 'Unknown error');
     }
     return Promise.reject(error);
   }
@@ -89,13 +89,13 @@ api.interceptors.response.use(
     // Log response errors for debugging
     if (process.env.NODE_ENV !== 'production') {
       console.error('API Response Error:', {
-        message: error.message,
-        response: error.response,
-        request: error.request,
-        config: {
+        message: error?.message || 'Unknown error',
+        response: error?.response || null,
+        request: error?.request || null,
+        config: error?.config ? {
           ...error.config,
-          url: (error.config?.baseURL || '') + error.config?.url
-        }
+          url: (error.config.baseURL || '') + (error.config.url || '')
+        } : null
       });
     }
 
@@ -141,22 +141,59 @@ export interface Todo {
   user_id: number;
   created_at: string;
   updated_at: string;
+  priority?: 'low' | 'medium' | 'high';
+  due_date?: string; // ISO 8601 format
+  category?: string;
+  recurring_rule?: string;
 }
 
 export interface CreateTodoData {
   title: string;
   description?: string;
   completed?: boolean;
+  priority?: 'low' | 'medium' | 'high';
+  due_date?: string; // ISO 8601 format
+  category?: string;
+  recurring_rule?: string;
 }
 
 export interface UpdateTodoData {
   title?: string;
   description?: string;
   completed?: boolean;
+  priority?: 'low' | 'medium' | 'high';
+  due_date?: string; // ISO 8601 format
+  category?: string;
+  recurring_rule?: string;
+}
+
+export interface GetTodosParams {
+  search?: string;
+  completed?: boolean;
+  priority?: 'low' | 'medium' | 'high';
+  category?: string;
+  due_date_start?: string; // YYYY-MM-DD format
+  due_date_end?: string; // YYYY-MM-DD format
+  sort_by?: 'created_at' | 'updated_at' | 'due_date' | 'priority' | 'title';
+  sort_order?: 'asc' | 'desc';
 }
 
 export const todosAPI = {
-  getAll: () => api.get<Todo[]>('/todos'),
+  getAll: (params?: GetTodosParams) => {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+
+    const queryString = queryParams.toString();
+    const url = queryString ? `/todos?${queryString}` : '/todos';
+
+    return api.get<Todo[]>(url);
+  },
 
   getById: (id: number) => api.get<Todo>(`/todos/${id}`),
 

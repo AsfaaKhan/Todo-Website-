@@ -9,9 +9,9 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
-  getTodos: () => Promise<Todo[]>;
-  createTodo: (todoData: { title: string; description?: string }) => Promise<Todo>;
-  updateTodo: (id: number, todoData: { title?: string; description?: string; completed?: boolean }) => Promise<Todo>;
+  getTodos: (params?: import('../services/api').GetTodosParams) => Promise<Todo[]>;
+  createTodo: (todoData: import('../services/api').CreateTodoData) => Promise<Todo>;
+  updateTodo: (id: number, todoData: import('../services/api').UpdateTodoData) => Promise<Todo>;
   deleteTodo: (id: number) => Promise<void>;
 }
 
@@ -66,14 +66,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsAuthenticated(false);
   };
 
-  const getTodos = async (): Promise<Todo[]> => {
+  const getTodos = async (params?: import('../services/api').GetTodosParams): Promise<Todo[]> => {
     try {
       const token = localStorage.getItem('access_token');
       if (!token) {
         throw new Error('Not authenticated');
       }
 
-      const response = await todosAPI.getAll();
+      const response = await todosAPI.getAll(params);
       return response.data;
     } catch (error) {
       console.error('Error fetching todos:', error);
@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const createTodo = async (todoData: { title: string; description?: string }): Promise<Todo> => {
+  const createTodo = async (todoData: import('../services/api').CreateTodoData): Promise<Todo> => {
     try {
       const response = await todosAPI.create(todoData);
       return response.data;
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateTodo = async (id: number, todoData: { title?: string; description?: string; completed?: boolean }): Promise<Todo> => {
+  const updateTodo = async (id: number, todoData: import('../services/api').UpdateTodoData): Promise<Todo> => {
     try {
       const response = await todosAPI.update(id, todoData);
       return response.data;

@@ -9,10 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/ws": "^8.18.1",
     "axios": "^1.13.2",
     "next": "16.1.1",
+    "openai": "^6.17.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "ws": "^8.19.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

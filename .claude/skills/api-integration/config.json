@@ -1,0 +1,33 @@
+{
+  "name": "api-integration-patterns",
+  "displayName": "API Integration Patterns",
+  "description": "Build robust API clients with error handling, retry logic, caching, and rate limiting",
+  "category": "integration",
+  "tags": [
+    "api",
+    "integration",
+    "error-handling",
+    "retry-logic",
+    "caching",
+    "rate-limiting",
+    "exponential-backoff",
+    "resilience"
+  ],
+  "files": [
+    "api-integration.skill.md",
+    "template.md",
+    "README.md"
+  ],
+  "triggers": [
+    "api integration",
+    "third-party api",
+    "api client",
+    "error handling",
+    "retry logic",
+    "api caching",
+    "rate limiting",
+    "exponential backoff"
+  ],
+  "dependencies": [],
+  "version": "1.0.0"
+}

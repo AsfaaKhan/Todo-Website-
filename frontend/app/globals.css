@@ -4,6 +4,7 @@
 @import "../src/styles/colors.css";
 @import "../src/styles/typography.css";
 @import "../src/styles/layout.css";
+@import "../src/styles/theme-enhancements.css";
 
 :root {
   --background: var(--color-background);
@@ -12,16 +13,16 @@
   --border: var(--color-border);
   --input: var(--color-border);
 
-  /* Primary colors */
+  /* Primary colors (Blue) */
   --primary: var(--color-primary);
   --primary-foreground: #ffffff;
 
-  /* Secondary colors */
+  /* Secondary colors (Blue) */
   --secondary: var(--color-primary-light);
   --secondary-foreground: #ffffff;
 
-  /* Accent colors */
-  --accent: var(--color-primary-light);
+  /* Accent colors (Yellow) */
+  --accent: var(--color-accent);
   --accent-foreground: var(--color-text-primary);
 
   /* Success colors */
@@ -32,13 +33,21 @@
   --destructive: var(--color-error);
   --destructive-foreground: #ffffff;
 
-  /* Warning colors */
+  /* Warning colors (Yellow) */
   --warning: var(--color-warning);
   --warning-foreground: #ffffff;
 
   /* Muted colors */
   --muted: var(--color-card-bg);
   --muted-foreground: var(--color-text-secondary);
+
+  /* Additional theme colors */
+  --blue-primary: var(--color-primary);
+  --blue-light: var(--color-primary-light);
+  --blue-dark: var(--color-primary-dark);
+  --yellow-accent: var(--color-accent);
+  --yellow-light: var(--color-accent-light);
+  --yellow-dark: var(--color-accent-dark);
 
   /* Typography */
   --font-sans: var(--font-family);

@@ -1,0 +1,21 @@
+{
+  "name": "responsive-navbar",
+  "displayName": "Responsive Navbar Design",
+  "description": "Creates a responsive navigation bar with mobile menu functionality",
+  "category": "ui-components",
+  "tags": ["navbar", "responsive", "mobile-menu", "accessibility", "css", "javascript"],
+  "files": [
+    "template.html",
+    "responsive-navbar.skill.md",
+    "README.md"
+  ],
+  "triggers": [
+    "responsive navbar",
+    "mobile menu",
+    "navigation bar",
+    "hamburger menu",
+    "accessible navigation"
+  ],
+  "dependencies": [],
+  "version": "1.0.0"
+}

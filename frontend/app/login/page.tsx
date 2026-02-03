@@ -40,17 +40,23 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-yellow-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <Card className="w-full">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Sign in to your account</CardTitle>
+        <Card className="w-full shadow-xl border-blue-100">
+          <CardHeader className="text-center pb-4">
+            <div className="mx-auto h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <CardTitle className="text-2xl font-bold text-blue-800">Welcome Back</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-5" onSubmit={handleSubmit}>
               {error && (
-                <div className="rounded-md bg-destructive/10 p-4">
-                  <div className="text-sm text-destructive">{error}</div>
+                <div className="rounded-lg bg-destructive/10 p-3">
+                  <div className="text-sm text-destructive font-medium">{error}</div>
                 </div>
               )}
 
@@ -76,7 +82,7 @@ const LoginPage: React.FC = () => {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 transform hover:scale-[1.02]"
               >
                 Sign in
               </Button>
@@ -85,7 +91,7 @@ const LoginPage: React.FC = () => {
             <div className="text-center mt-6">
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
-                <Link href="/signup" className="font-medium text-primary hover:underline">
+                <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors">
                   Sign up
                 </Link>
               </p>

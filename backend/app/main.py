@@ -2,7 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from .config import settings
-from .api import auth, todos
+from .api import auth, todos, chat
+from .services import todo_service
 from .database.database import create_db_and_tables
 
 # Initialize FastAPI app
@@ -15,7 +16,7 @@ app = FastAPI(
 # Set up CORS middleware for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for Hugging Face deployment
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000", "http://127.0.0.1:8000"],  # Specify allowed origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,6 +27,7 @@ app.add_middleware(
 # Include API routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(todos.router, prefix="/todos", tags=["Todos"])
+app.include_router(chat.router, prefix="/api", tags=["Chat"])
 
 import threading
 import time

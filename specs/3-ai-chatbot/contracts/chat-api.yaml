@@ -1,0 +1,308 @@
+openapi: 3.0.3
+info:
+  title: Todo AI Chatbot API
+  description: API for interacting with the AI chatbot to manage todos via natural language
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+
+paths:
+  /chat/start:
+    post:
+      summary: Start a new chat session
+      description: Creates a new chat session for the authenticated user
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully started chat session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatStartResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/UserNotFoundError'
+
+  /chat/{sessionId}/message:
+    post:
+      summary: Send a message to the AI chatbot
+      description: Processes a user message and returns AI response with any tool calls
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the chat session
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageRequest'
+      responses:
+        '200':
+          description: AI response with potential tool calls
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref:'#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/SessionNotFoundError'
+
+  /chat/{sessionId}/history:
+    get:
+      summary: Get chat history for a session
+      description: Retrieves the message history for a specific chat session
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the chat session
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of messages to return
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          description: Number of messages to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Chat history retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatHistoryResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/SessionNotFoundError'
+
+  /chat/{sessionId}:
+    delete:
+      summary: End a chat session
+      description: Marks a chat session as inactive
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the chat session
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Chat session ended successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatEndResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/SessionNotFoundError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ChatMessageRequest:
+      type: object
+      required:
+        - message
+        - userId
+      properties:
+        message:
+          type: string
+          description: The user's message to the AI chatbot
+          example: "Add a task to buy groceries"
+        userId:
+          type: integer
+          description: The ID of the authenticated user
+          example: 123
+
+    ChatMessageResponse:
+      type: object
+      required:
+        - response
+        - sessionId
+      properties:
+        response:
+          type: string
+          description: The AI's response to the user's message
+          example: "I've created the task 'buy groceries' for you."
+        intent:
+          type: string
+          description: The identified intent from the user's message
+          enum: [create_todo, list_todos, complete_todo, delete_todo, update_todo, unknown]
+          example: "create_todo"
+        processed:
+          type: boolean
+          description: Whether the AI successfully processed the request
+          example: true
+        sessionId:
+          type: string
+          description: The ID of the chat session
+          example: "sess_a1b2c3d4e5f6"
+
+    ChatStartResponse:
+      type: object
+      required:
+        - sessionId
+        - message
+      properties:
+        sessionId:
+          type: string
+          description: The ID of the newly created chat session
+          example: "sess_a1b2c3d4e5f6"
+        message:
+          type: string
+          description: Confirmation message
+          example: "Chat session started successfully"
+
+    ChatHistoryResponse:
+      type: object
+      required:
+        - messages
+        - totalCount
+        - sessionId
+      properties:
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              sessionId:
+                type: string
+              sender:
+                type: string
+                enum: [user, ai]
+              content:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+              intent:
+                type: string
+              processed:
+                type: boolean
+        totalCount:
+          type: integer
+          description: Total number of messages in the session
+          example: 10
+        sessionId:
+          type: string
+          description: The ID of the chat session
+          example: "sess_a1b2c3d4e5f6"
+
+    ChatEndResponse:
+      type: object
+      required:
+        - message
+        - sessionId
+      properties:
+        message:
+          type: string
+          description: Confirmation message
+          example: "Chat session ended successfully"
+        sessionId:
+          type: string
+          description: The ID of the ended chat session
+          example: "sess_a1b2c3d4e5f6"
+
+  responses:
+    UnauthorizedError:
+      description: Authentication is required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Not authenticated"
+
+    ForbiddenError:
+      description: Access forbidden - user not authorized for this resource
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Not authorized to access this chat session"
+
+    BadRequestError:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Chat session is inactive"
+
+    UserNotFoundError:
+      description: User not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "User not found"
+
+    SessionNotFoundError:
+      description: Chat session not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Chat session not found"

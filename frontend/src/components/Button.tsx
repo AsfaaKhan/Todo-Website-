@@ -26,21 +26,25 @@ export const Button: React.FC<ButtonProps> = ({
     primary: [
       'bg-primary text-primary-foreground',
       'hover:bg-primary/90',
-      'active:bg-primary/80'
+      'active:bg-primary/80',
+      'shadow-md hover:shadow-lg transition-all duration-200'
     ],
     secondary: [
-      'bg-secondary text-secondary-foreground',
-      'hover:bg-secondary/80',
-      'active:bg-secondary/70'
+      'bg-accent text-accent-foreground',
+      'hover:bg-accent/90',
+      'active:bg-accent/80',
+      'shadow-md hover:shadow-lg transition-all duration-200'
     ],
     ghost: [
       'hover:bg-accent hover:text-accent-foreground',
-      'active:bg-accent/70'
+      'active:bg-accent/70',
+      'transition-colors duration-200'
     ],
     destructive: [
       'bg-destructive text-destructive-foreground',
       'hover:bg-destructive/90',
-      'active:bg-destructive/80'
+      'active:bg-destructive/80',
+      'shadow-md hover:shadow-lg transition-all duration-200'
     ]
   };
 
@@ -52,7 +56,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const classes = [
     ...baseClasses,
-    ...variantClasses[variant],
+    ...(variantClasses[variant] || []),
     sizeClasses[size],
     className
   ].join(' ');

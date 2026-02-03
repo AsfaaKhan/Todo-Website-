@@ -11,7 +11,7 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}
+      className={`rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md ${className}`}
       {...props}
     >
       {children}
@@ -25,7 +25,7 @@ export const CardHeader: React.FC<CardProps> = ({
   ...props
 }) => {
   return (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
+    <div className={`flex flex-col space-y-2 p-6 pb-4 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ export const CardTitle: React.FC<CardProps> = ({
 }) => {
   return (
     <h3
-      className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
+      className={`text-2xl font-bold leading-tight tracking-tight text-blue-800 ${className}`}
       {...props}
     >
       {children}
