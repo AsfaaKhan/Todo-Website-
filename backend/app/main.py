@@ -16,7 +16,16 @@ app = FastAPI(
 # Set up CORS middleware for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000", "http://127.0.0.1:8000"],  # Specify allowed origins
+    allow_origins=[
+        "http://localhost:3000",  # Local development
+        "http://127.0.0.1:3000",  # Alternative localhost
+        "http://localhost:8000",  # Alternative for backend testing
+        "http://127.0.0.1:8000",  # Alternative for backend testing
+        "https://khanzadiasfi0314-todoapp-chatbot.hf.space",  # Hugging Face Space
+        "https://*.hf.space",  # Wildcard for Hugging Face Spaces
+        "http://localhost:3001",  # Additional common port
+        "http://localhost:3002",  # Additional common port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
