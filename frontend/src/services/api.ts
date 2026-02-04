@@ -85,6 +85,7 @@ api.interceptors.response.use(
     if (process.env.NODE_ENV !== 'production') {
       console.error('API Response Error:', {
         message: error?.message || 'Unknown error',
+        code: error?.code || 'No code',
         response: error?.response || null,
         request: error?.request || null,
         config: error?.config ? {
