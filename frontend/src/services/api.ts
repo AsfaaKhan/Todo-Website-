@@ -3,19 +3,7 @@ import axios from 'axios';
 // Function to get the proper API base URL based on current protocol
 const getApiBaseUrl = (): string => {
   // Get the environment variable
-  let envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-  // For Hugging Face spaces, ensure HTTPS
-  if (envUrl.includes('hf.space')) {
-    if (envUrl.startsWith('http://')) {
-      envUrl = envUrl.replace('http://', 'https://');
-    }
-    // Ensure there's no trailing slash
-    if (envUrl.endsWith('/')) {
-      envUrl = envUrl.slice(0, -1);
-    }
-    return envUrl;
-  }
+  let envUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   // Check if we're in a browser environment
   if (typeof window !== 'undefined') {
@@ -25,6 +13,13 @@ const getApiBaseUrl = (): string => {
       if (envUrl.startsWith('http://')) {
         envUrl = envUrl.replace('http://', 'https://');
       }
+    }
+  }
+
+  // For Hugging Face spaces, ensure HTTPS regardless of current protocol
+  if (envUrl.includes('hf.space')) {
+    if (envUrl.startsWith('http://')) {
+      envUrl = envUrl.replace('http://', 'https://');
     }
   }
 
