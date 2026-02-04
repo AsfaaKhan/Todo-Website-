@@ -3,7 +3,7 @@
 
 import { mcpServer } from './mcp-server';
 import { processCreateTodoCommand } from './parser/create-parser';
-import { ChatMessageRequest, ChatMessageResponse } from '../types/chat';
+import { ChatMessageRequest, ChatMessageResponse, Todo } from '../types/chat';
 import { errorHandler } from '../utils/error-handler';
 import { getUserErrorMessage } from '../utils/user-error-messages';
 
@@ -168,7 +168,7 @@ class AIAgent {
 
       if (result.success) {
         if (result.todos && result.todos.length > 0) {
-          const todoList = result.todos.map(todo => `- ${todo.completed ? '✓' : '○'} ${todo.title}`).join('\n');
+          const todoList = result.todos.map((todo: Todo) => `- ${todo.completed ? '✓' : '○'} ${todo.title}`).join('\n');
           let response = `Here are your tasks:\n${todoList}`;
 
           if (result.totalCount && result.todos.length < result.totalCount) {
@@ -475,4 +475,4 @@ class AIAgent {
 // Create a singleton instance
 const aiAgent = new AIAgent();
 
-export { aiAgent, AIAgent, AIContext };
+export { aiAgent, AIAgent };

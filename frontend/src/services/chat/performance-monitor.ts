@@ -352,10 +352,10 @@ class PerformanceMonitor {
    * Get the current monitoring status
    * @returns Monitoring status information
    */
-  getStatus(): {
+  getStatus(this: PerformanceMonitor): {
     enabled: boolean;
     totalMetrics: number;
-    thresholds: typeof this.thresholds;
+    thresholds: typeof PerformanceMonitor.prototype.thresholds;
     storageLimit: number;
   } {
     return {
@@ -433,7 +433,7 @@ class PerformanceMonitor {
         totalOperations: totalOps,
         successfulOperations: successfulOps,
         failedOperations: failedOps,
-        averageDuration,
+        averageDuration: avgDuration,
         errorRate
       }
     };
@@ -523,4 +523,4 @@ class PerformanceMonitor {
 // Create a singleton instance
 const performanceMonitor = new PerformanceMonitor();
 
-export { performanceMonitor, PerformanceMonitor, PerformanceMetric, PerformanceSummary };
+export { performanceMonitor, PerformanceMonitor, type PerformanceMetric, type PerformanceSummary };

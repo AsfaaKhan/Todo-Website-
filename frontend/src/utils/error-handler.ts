@@ -44,7 +44,8 @@ class ErrorHandler {
 
     // Log to console in development
     if (process.env.NODE_ENV !== 'production') {
-      console[level === 'critical' ? 'error' : level](error);
+      const consoleMethod = level === 'warning' ? 'warn' : (level === 'critical' ? 'error' : level);
+      console[consoleMethod](error);
     }
   }
 
@@ -192,7 +193,7 @@ class ErrorHandler {
           await this.delay(delay);
 
           this.logError(
-            `Retry attempt ${i + 1} failed: ${error.message || error}`,
+            `Retry attempt ${i + 1} failed: ${(error as any)?.message || String(error)}`,
             'ErrorHandler.retryOperation',
             { attempt: i + 1, maxRetries }
           );

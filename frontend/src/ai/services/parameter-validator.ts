@@ -616,4 +616,4 @@ class ParameterValidator {
 // Create a singleton instance
 const parameterValidator = new ParameterValidator();
 
-export { parameterValidator, ParameterValidator, ValidationRule, ValidationResult };
+export { parameterValidator, ParameterValidator, type ValidationRule, type ValidationResult };

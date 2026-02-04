@@ -423,4 +423,4 @@ class HelpSuggester {
 // Create a singleton instance
 const helpSuggester = new HelpSuggester();
 
-export { helpSuggester, HelpSuggester, HelpSuggestion, UserContext };
+export { helpSuggester, HelpSuggester, type HelpSuggestion, type UserContext };

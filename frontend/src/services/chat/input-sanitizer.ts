@@ -269,4 +269,4 @@ class InputSanitizer {
 // Create a singleton instance
 const inputSanitizer = new InputSanitizer();
 
-export { inputSanitizer, InputSanitizer, SanitizationOptions };
+export { inputSanitizer, InputSanitizer, type SanitizationOptions };

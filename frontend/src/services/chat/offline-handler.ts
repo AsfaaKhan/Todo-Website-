@@ -639,4 +639,4 @@ class OfflineHandler {
 // Create a singleton instance
 const offlineHandler = new OfflineHandler();
 
-export { offlineHandler, OfflineHandler, OfflineMessage, OfflineQueueItem };
+export { offlineHandler, OfflineHandler, type OfflineMessage, type OfflineQueueItem };

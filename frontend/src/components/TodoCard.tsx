@@ -92,7 +92,7 @@ export const TodoCard: React.FC<TodoCardProps> = ({
                     <label className="text-xs text-muted-foreground">Priority</label>
                     <select
                       value={editPriority}
-                      onChange={(e) => setEditPriority(e.target.value)}
+                      onChange={(e) => setEditPriority(e.target.value as 'low' | 'medium' | 'high')}
                       className="w-full p-2 border rounded text-sm"
                     >
                       <option value="low">Low</option>
@@ -167,7 +167,7 @@ export const TodoCard: React.FC<TodoCardProps> = ({
                 </Button>
                 <Button
                   onClick={() => setIsEditing(true)}
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                 >
                   Edit
@@ -184,14 +184,14 @@ export const TodoCard: React.FC<TodoCardProps> = ({
               <>
                 <Button
                   onClick={handleSaveEdit}
-                  variant="success"
+                  variant="primary"
                   size="sm"
                 >
                   Save
                 </Button>
                 <Button
                   onClick={handleCancelEdit}
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                 >
                   Cancel

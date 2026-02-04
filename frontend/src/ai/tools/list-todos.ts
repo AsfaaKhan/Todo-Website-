@@ -75,7 +75,7 @@ const listTodosTool: Tool = {
 
       if (params.due_date) {
         filteredTodos = filteredTodos.filter(todo =>
-          todo.due_date && todo.due_date.startsWith(params.due_date)
+          todo.due_date && params.due_date && todo.due_date.startsWith(params.due_date)
         );
       }
 

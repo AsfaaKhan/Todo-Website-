@@ -3,7 +3,7 @@
 
 import { EventEmitter } from 'events';
 import { CreateTodoParams, UpdateTodoParams, CompleteTodoParams, DeleteTodoParams, ListTodosParams, CreateTodoResponse, UpdateTodoResponse, CompleteTodoResponse, DeleteTodoResponse, ListTodosResponse } from '../types/chat';
-import { todoApi } from '../services/api';
+import { todosAPI } from '../services/api';
 import { createTodoTool } from './tools/create-todo';
 import { updateTodoTool } from './tools/update-todo';
 import { completeTodoTool } from './tools/complete-todo';
@@ -86,4 +86,4 @@ class MCPServer {
 // Create a singleton instance
 const mcpServer = new MCPServer();
 
-export { mcpServer, MCPServer, Tool };
+export { mcpServer, MCPServer };

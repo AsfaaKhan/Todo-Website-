@@ -66,9 +66,9 @@ const updateTodoTool: Tool = {
 
       // Verify that at least one field to update is provided
       const updateFields = { ...params };
-      delete updateFields.todo_id; // Remove the ID from update fields
+      const { todo_id, ...fieldsToUpdate } = updateFields;
 
-      const hasUpdateFields = Object.keys(updateFields).some(key => updateFields[key] !== undefined);
+      const hasUpdateFields = Object.keys(fieldsToUpdate).some(key => (fieldsToUpdate as any)[key] !== undefined);
 
       if (!hasUpdateFields) {
         return {

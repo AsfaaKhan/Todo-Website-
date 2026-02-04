@@ -19,6 +19,7 @@ interface RetryAttempt {
 }
 
 class RetryService {
+  private config: RetryConfig;
   private defaultConfig: RetryConfig = {
     maxRetries: 3,
     baseDelay: 1000, // 1 second
@@ -31,7 +32,7 @@ class RetryService {
 
   private retryHistory: Map<string, RetryAttempt[]> = new Map();
 
-  constructor(private config: RetryConfig = {}) {
+  constructor(config?: Partial<RetryConfig>) {
     this.config = { ...this.defaultConfig, ...config };
   }
 
@@ -325,4 +326,4 @@ class RetryService {
 // Create a singleton instance
 const retryService = new RetryService();
 
-export { retryService, RetryService, RetryConfig, RetryAttempt };
+export { retryService, RetryService, type RetryConfig, type RetryAttempt };

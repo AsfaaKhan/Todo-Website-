@@ -395,4 +395,4 @@ class AmbiguityHandler {
 // Create a singleton instance
 const ambiguityHandler = new AmbiguityHandler();
 
-export { ambiguityHandler, AmbiguityHandler, AmbiguityResolution, IntentClarification };
+export { ambiguityHandler, AmbiguityHandler, type AmbiguityResolution, type IntentClarification };

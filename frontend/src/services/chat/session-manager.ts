@@ -254,4 +254,4 @@ class SessionManager {
 // Create a singleton instance
 const sessionManager = new SessionManager();
 
-export { sessionManager, SessionManager, SessionConfig };
+export { sessionManager, SessionManager, type SessionConfig };

@@ -418,4 +418,4 @@ class SessionGuard {
 // Create a singleton instance
 const sessionGuard = new SessionGuard();
 
-export { sessionGuard, SessionGuard, SessionGuardConfig };
+export { sessionGuard, SessionGuard, type SessionGuardConfig };

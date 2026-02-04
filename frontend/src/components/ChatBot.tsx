@@ -29,6 +29,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
         // Add welcome message
         const welcomeMessage: Message = {
           id: Date.now(),
+          sessionId: sessionId || '',
           content: "Hello! I'm your AI assistant. You can ask me to create, update, complete, or list your todos. Try saying something like 'Add a task to buy groceries' or 'Show me my tasks'.",
           sender: 'ai',
           timestamp: new Date(),
@@ -40,6 +41,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
         console.error('Failed to initialize chat session:', error);
         const errorMessage: Message = {
           id: Date.now(),
+          sessionId: sessionId || '',
           content: "Sorry, I'm having trouble connecting. Please try again later.",
           sender: 'ai',
           timestamp: new Date(),
@@ -78,6 +80,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
       // Add user message to UI immediately
       const userMessage: Message = {
         id: Date.now(),
+        sessionId: sessionId,
         content: message,
         sender: 'user',
         timestamp: new Date(),
@@ -97,6 +100,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
 
       const aiMessage: Message = {
         id: Date.now(),
+        sessionId: sessionId,
         content: response.response,
         sender: 'ai',
         timestamp: new Date(),
@@ -111,6 +115,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
       // Show error message to user
       const errorMessage: Message = {
         id: Date.now(),
+        sessionId: sessionId,
         content: errorHandler.handleError(error, 'ChatBot.handleSendMessage', 'Sorry, I encountered an error. Please try again.'),
         sender: 'ai',
         timestamp: new Date(),

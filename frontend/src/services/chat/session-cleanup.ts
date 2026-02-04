@@ -452,4 +452,4 @@ class SessionCleanupService {
 // Create a singleton instance
 const sessionCleanupService = new SessionCleanupService();
 
-export { sessionCleanupService, SessionCleanupService, SessionInfo, CleanupStats };
+export { sessionCleanupService, SessionCleanupService, type SessionInfo, type CleanupStats };
