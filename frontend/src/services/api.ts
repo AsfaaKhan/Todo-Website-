@@ -2,16 +2,10 @@ import axios from 'axios';
 
 // Function to get the proper API base URL based on current protocol
 const getApiBaseUrl = (): string => {
-  // Check if we're running on Vercel (for deployed version)
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    // Use our proxy endpoint to avoid CORS issues
-    return '/api/proxy';
-  }
-
-  // Get the environment variable for local development
+  // Get the environment variable
   let envUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-  // For Hugging Face spaces, force HTTPS regardless of current environment
+  // Force HTTPS for Hugging Face spaces to prevent redirect issues
   if (envUrl.includes('hf.space')) {
     if (envUrl.startsWith('http://')) {
       envUrl = envUrl.replace('http://', 'https://');
@@ -32,6 +26,12 @@ const api = axios.create({
   timeout: 15000, // Increase timeout to 15 seconds to handle slower Hugging Face responses
   withCredentials: true, // Ensure cookies/credentials are included in cross-origin requests
 });
+
+// Handle redirects that change protocols (HTTP from HTTPS)
+api.defaults.validateStatus = function (status) {
+  // Allow redirect status codes as well as normal success codes
+  return (status >= 200 && status < 300) || status === 301 || status === 302 || status === 307 || status === 308;
+};
 
 // Add interceptors to the main instance
 api.interceptors.request.use(
@@ -106,31 +106,11 @@ export default api;
 
 // Export API functions that use the configured instance
 export const authAPI = {
-  register: (userData: { username: string; email: string; password: string }) => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      const proxyUrl = '/api/proxy?path=auth/register';
-      return axios.post(proxyUrl, userData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-    } else {
-      return api.post('/auth/register', userData);
-    }
-  },
+  register: (userData: { username: string; email: string; password: string }) =>
+    api.post('/auth/register', userData),
 
-  login: (credentials: { username: string; password: string }) => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      const proxyUrl = '/api/proxy?path=auth/login';
-      return axios.post(proxyUrl, credentials, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-    } else {
-      return api.post('/auth/login', credentials);
-    }
-  },
+  login: (credentials: { username: string; password: string }) =>
+    api.post('/auth/login', credentials),
 
   logout: () => {
     localStorage.removeItem('access_token');
@@ -191,106 +171,27 @@ export interface GetTodosParams {
 
 export const todosAPI = {
   getAll: (params?: GetTodosParams) => {
-    // If using proxy, construct URL with path parameter
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      let proxyUrl = '/api/proxy?path=todos';
-      if (params) {
-        const queryParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            queryParams.append(key, String(value));
-          }
-        });
-        if (queryParams.toString()) {
-          proxyUrl += `&${queryParams.toString()}`;
-        }
-      }
-      return axios.get<Todo[]>(proxyUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localStorage.getItem('access_token') && {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          })
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
         }
       });
-    } else {
-      const queryParams = new URLSearchParams();
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            queryParams.append(key, String(value));
-          }
-        });
-      }
-
-      const queryString = queryParams.toString();
-      const url = queryString ? `/todos?${queryString}` : '/todos';
-
-      return api.get<Todo[]>(url);
     }
+
+    const queryString = queryParams.toString();
+    const url = queryString ? `/todos?${queryString}` : '/todos';
+
+    return api.get<Todo[]>(url);
   },
 
-  getById: (id: number) => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      const proxyUrl = `/api/proxy?path=todos/${id}`;
-      return axios.get<Todo>(proxyUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localStorage.getItem('access_token') && {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          })
-        }
-      });
-    } else {
-      return api.get<Todo>(`/todos/${id}`);
-    }
-  },
+  getById: (id: number) => api.get<Todo>(`/todos/${id}`),
 
-  create: (todoData: CreateTodoData) => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      const proxyUrl = '/api/proxy?path=todos';
-      return axios.post<Todo>(proxyUrl, todoData, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localStorage.getItem('access_token') && {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          })
-        }
-      });
-    } else {
-      return api.post<Todo>('/todos', todoData);
-    }
-  },
+  create: (todoData: CreateTodoData) => api.post<Todo>('/todos', todoData),
 
-  update: (id: number, todoData: UpdateTodoData) => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      const proxyUrl = `/api/proxy?path=todos/${id}`;
-      return axios.put<Todo>(proxyUrl, todoData, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localStorage.getItem('access_token') && {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          })
-        }
-      });
-    } else {
-      return api.put<Todo>(`/todos/${id}`, todoData);
-    }
-  },
+  update: (id: number, todoData: UpdateTodoData) =>
+    api.put<Todo>(`/todos/${id}`, todoData),
 
-  delete: (id: number) => {
-    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-      const proxyUrl = `/api/proxy?path=todos/${id}`;
-      return axios.delete(proxyUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localStorage.getItem('access_token') && {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          })
-        }
-      });
-    } else {
-      return api.delete(`/todos/${id}`);
-    }
-  },
+  delete: (id: number) => api.delete(`/todos/${id}`),
 };
