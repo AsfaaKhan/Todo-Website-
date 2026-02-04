@@ -223,7 +223,20 @@ python -m pytest
 The frontend can be deployed to Vercel, Netlify, or any hosting platform that supports Next.js applications.
 
 ### Backend Deployment
-The backend can be deployed to Heroku, AWS, Google Cloud, or any platform that supports Python/FastAPI applications.
+The backend can be deployed to various platforms:
+
+#### Hugging Face Spaces (Recommended)
+The backend is specifically configured for deployment on Hugging Face Spaces:
+
+1. Create a Hugging Face account
+2. Create a new Space with the `docker` SDK type
+3. Add the following secrets in your Space settings:
+   - `DATABASE_URL`: PostgreSQL connection string (e.g., Neon DB URL)
+   - `SECRET_KEY`: Secret key for JWT signing (long random string)
+4. The application will automatically deploy using the configuration in `backend/huggingface.yml`
+
+#### Other Platforms
+The backend can also be deployed to Heroku, AWS, Google Cloud, or any platform that supports Python/FastAPI applications.
 
 ## 🤝 Contributing
 

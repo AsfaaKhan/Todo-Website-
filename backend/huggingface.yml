@@ -38,4 +38,4 @@ image: python:3.10-slim
 
 run_commands:
   - pip install -r requirements.txt
-  - uvicorn app.main:app --host 0.0.0.0 --port 8000
+  - uvicorn app.huggingface_app:application --host 0.0.0.0 --port 8000

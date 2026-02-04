@@ -11,6 +11,6 @@ pip install -r requirements.txt
 # alembic upgrade head
 
 # Start the application
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.huggingface_app:application --host 0.0.0.0 --port 8000 --reload
 
 echo "Todo App Backend deployed successfully!"
