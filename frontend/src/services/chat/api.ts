@@ -2,7 +2,12 @@
 
 import { ChatMessageRequest, ChatMessageResponse } from '../../types/chat';
 
-const BACKEND_BASE_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+// Use NEXT_PUBLIC environment variable which is available on the client side
+// If not set, dynamically determine based on deployment environment
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ||
+  (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+    ? 'https://khanzadiasfi0314-todoapp-chatbot.hf.space' // Use deployed backend for Vercel
+    : 'http://localhost:8000'); // Default to localhost for local development
 
 class ChatApiService {
   private baseUrl: string;
@@ -13,9 +18,9 @@ class ChatApiService {
 
   /**
    * Start a new chat session
-   * @returns Session ID
+   * @returns Session ID and Conversation ID
    */
-  async startSession(): Promise<{ sessionId: string; message: string }> {
+  async startSession(): Promise<{ sessionId: string; conversationId: number; message: string }> {
     try {
       const response = await fetch(`${this.baseUrl}/api/chat/start`, {
         method: 'POST',
@@ -39,10 +44,10 @@ class ChatApiService {
   /**
    * Send a message to the AI agent
    * @param sessionId - The chat session ID
-   * @param message - The message content
+   * @param request - The message request containing message and userId
    * @returns AI response
    */
-  async sendMessage(sessionId: string, message: string): Promise<ChatMessageResponse> {
+  async sendMessage(sessionId: string, request: ChatMessageRequest): Promise<ChatMessageResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/api/chat/${sessionId}/message`, {
         method: 'POST',
@@ -50,10 +55,7 @@ class ChatApiService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getAuthToken()}`
         },
-        body: JSON.stringify({
-          message,
-          userId: this.getCurrentUserId()
-        })
+        body: JSON.stringify(request)
       });
 
       if (!response.ok) {
@@ -78,6 +80,7 @@ class ChatApiService {
     messages: any[];
     totalCount: number;
     sessionId: string;
+    conversationId: number;
   }> {
     try {
       let url = `${this.baseUrl}/api/chat/${sessionId}/history`;

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from .config import settings
-from .api import auth, todos, chat
+from .api import auth, todos, chat, conversations
 from .services import todo_service
 from .database.database import create_db_and_tables
 
@@ -25,6 +25,9 @@ app.add_middleware(
         "https://*.hf.space",  # Wildcard for Hugging Face Spaces
         "http://localhost:3001",  # Additional common port
         "http://localhost:3002",  # Additional common port
+        "https://todo-website-b2rsrymcd-asfaa-khans-projects.vercel.app",  # Vercel deployment
+        "https://todo-website-three-gray.vercel.app",  # Vercel deployment
+        "https://*.vercel.app",  # Wildcard for Vercel deployments
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -37,6 +40,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(todos.router, prefix="/todos", tags=["Todos"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
+app.include_router(conversations.router, prefix="/api", tags=["Conversations"])
 
 import threading
 import time

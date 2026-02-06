@@ -8,11 +8,16 @@ import os
 # Add the app directory to the path so we can import our models
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app.models.database import SQLModel  # Import our SQLModel
+# Import the database module to register all models with SQLModel.metadata
+from app.database.database import SQLModel  # This will import and register all models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Set the database URL programmatically to bypass environment variable issues
+if config.get_main_option("sqlalchemy.url") is None:
+    config.set_main_option("sqlalchemy.url", "sqlite:///./todo_app.db")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

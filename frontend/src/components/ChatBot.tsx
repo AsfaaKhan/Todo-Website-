@@ -26,10 +26,33 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
         const sessionData = await chatApi.startSession();
         setSessionId(sessionData.sessionId);
 
-        // Add welcome message
+        // Load conversation history if available
+        if (sessionData.conversationId) {
+          try {
+            const historyData = await chatApi.getChatHistory(sessionData.sessionId);
+            if (historyData.messages && historyData.messages.length > 0) {
+              // Convert API response to our internal Message format
+              const convertedMessages: Message[] = historyData.messages.map((msg: any) => ({
+                id: msg.id,
+                sessionId: msg.sessionId,
+                content: msg.content,
+                sender: msg.sender,
+                timestamp: new Date(msg.timestamp),
+                intent: msg.intent,
+                parameters: msg.parameters
+              }));
+              setMessages(convertedMessages);
+              return; // Skip welcome message if we have history
+            }
+          } catch (historyError) {
+            console.warn('Could not load chat history:', historyError);
+          }
+        }
+
+        // Add welcome message if no history was loaded
         const welcomeMessage: Message = {
           id: Date.now(),
-          sessionId: sessionId || '',
+          sessionId: sessionData.sessionId,
           content: "Hello! I'm your AI assistant. You can ask me to create, update, complete, or list your todos. Try saying something like 'Add a task to buy groceries' or 'Show me my tasks'.",
           sender: 'ai',
           timestamp: new Date(),
@@ -88,15 +111,11 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
 
       setMessages(prev => [...prev, userMessage]);
 
-      // Create AI context
-      const context: AIContext = {
-        userId: user?.id || user?.user_id || 1, // Use user ID from auth context or default to 1
-        sessionId: sessionId,
-        token: user?.token || localStorage.getItem('access_token') || '' // Get token from user object or localStorage
-      };
-
-      // Process message with AI agent
-      const response = await aiAgent.processCommand(message, context);
+      // Send message to chat API
+      const response = await chatApi.sendMessage(sessionId, {
+        message: message,
+        userId: user?.id || user?.user_id || 1
+      });
 
       const aiMessage: Message = {
         id: Date.now(),

@@ -5,6 +5,7 @@ from typing import Generator
 from contextlib import contextmanager
 import os
 from ..models.database import User, Todo
+from ..models.chat_models import Conversation, Message
 from ..config import settings
 
 # Create the database engine
