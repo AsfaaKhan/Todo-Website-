@@ -27,7 +27,8 @@ class ChatApiService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getAuthToken()}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -55,6 +56,7 @@ class ChatApiService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getAuthToken()}`
         },
+        credentials: 'include',
         body: JSON.stringify(request)
       });
 
@@ -98,7 +100,8 @@ class ChatApiService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getAuthToken()}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -124,7 +127,8 @@ class ChatApiService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getAuthToken()}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {

@@ -19,7 +19,6 @@ router = APIRouter(prefix="/chat")
 # Models for chat API
 class ChatMessageRequest(BaseModel):
     message: str
-    userId: int
 
 class ChatMessageResponse(BaseModel):
     response: str
@@ -97,6 +96,14 @@ def send_chat_message(
     """
     Send a message to the AI agent and persist both user message and AI response
     """
+    # Get the user from the authenticated token
+    user = session.exec(select(User).where(User.username == current_user)).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
     # Verify session exists and belongs to user
     if sessionId not in chat_sessions:
         raise HTTPException(
@@ -107,7 +114,7 @@ def send_chat_message(
     chat_session = chat_sessions[sessionId]
 
     # Validate that the user owns this session
-    if chat_session["userId"] != request.userId:
+    if chat_session["userId"] != user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access this chat session"
@@ -117,14 +124,6 @@ def send_chat_message(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Chat session is inactive"
-        )
-
-    # Get the user for validation
-    user = session.exec(select(User).where(User.username == current_user)).first()
-    if not user or user.id != request.userId:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized"
         )
 
     # Get conversation ID from session
@@ -304,7 +303,7 @@ def process_create_todo_command(message: str, user_id: int, db_session: Session)
         # Look for keywords that might indicate the start of the task title
 
         # Remove common prefixes like "add", "create", etc.
-        title_match = re.search(r"(?:add|create|make|new|buy|get|do)\s+(?:a\s+|an\s+|the\s+)?(.+?)(?:\s+for\s+tomorrow|\s+at\s+\d|\s+on\s+\w+|\s+by\s+\d|\s+due\s+\w+|$)", message.lower)
+        title_match = re.search(r"(?:add|create|make|new|buy|get|do)\s+(?:a\s+|an\s+|the\s+)?(.+?)(?:\s+for\s+tomorrow|\s+at\s+\d|\s+on\s+\w+|\s+by\s+\d|\s+due\s+\w+|$)", message.lower())
 
         if title_match:
             title = title_match.group(1).strip()

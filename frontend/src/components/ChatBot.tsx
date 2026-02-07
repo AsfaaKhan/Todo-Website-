@@ -113,8 +113,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ className = '' }) => {
 
       // Send message to chat API
       const response = await chatApi.sendMessage(sessionId, {
-        message: message,
-        userId: user?.id || user?.user_id || 1
+        message: message
       });
 
       const aiMessage: Message = {

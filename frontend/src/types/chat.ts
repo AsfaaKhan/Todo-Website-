@@ -104,7 +104,6 @@ export interface ListTodosResponse extends ToolResponse {
 
 export interface ChatMessageRequest {
   message: string;
-  userId: number;
 }
 
 export interface ChatMessageResponse {
