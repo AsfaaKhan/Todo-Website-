@@ -109,10 +109,6 @@ npm install -g concurrently
 concurrently "cd backend && uv run uvicorn app.main:app --reload --port 8000" "cd frontend && npm run dev"
 ```
 
-## 🤖 Using the AI Chatbot
-
-Once the application is running, you can use the AI chatbot to manage your todos:
-
 ### Supported Commands
 
 #### Creating Todos
